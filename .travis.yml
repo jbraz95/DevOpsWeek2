@@ -1,0 +1,34 @@
+sudo: required
+services:
+- docker
+language: python
+python:
+- '3.5'
+before_install:
+- docker version
+- docker info
+install:
+- npm install newman
+- pip install -r requirements.txt
+- pip install nose
+- pip install Flask-Testing
+before_script:
+- node --version
+- npm --version
+- node_modules/.bin/newman --version
+script:
+- nosetests
+- docker build -t my_docker_reposetory/swagger_server .
+- docker run --name example_api -d -t -p 127.0.0.1:8080:8080 my/swagger_server
+- docker ps
+- count=0 && until $(curl --output /dev/null --silent --head --fail http://localhost:8080);
+  do printf '.' && sleep 3 && count=$((count+1)) && if [ $count -gt 5 ]; then break;
+  fi; done
+after_success:
+- docker login -u $DOCKER_USER -p $DOCKER_PASS
+- docker tag my_docker_reposetory/swagger_server my_docker_reposetory/swagger_server
+- docker push my_docker_reposetory/swagger_server
+env:
+  global:
+  - secure: TrnSPKNY1roE7wEWlDnock3cj9GizQZQK+67fIC3B60U5LQOhm/Uoi+Ss+lXV7RSBMwutwo50vHfxQ3u0ycfIOHIsgUBLz0MjUUrdfKM+LwkTCP8PrB6Du4rnhqriFtYL1LunaUpC+F3JwmwdMcYY4OcK5g4oO9iX1RfXWIjanhE40+PpxNnodBRUwzKB1BSXI0Rz8vx86zPHxGuCDpzHsw9MI1kmmvBZw7hqFzYWRHrq+4DqgRVfrxHOGH4wBBM+cij73xE3+wvvBgKTtsMbrzi2wR5dsUQQJCN5Crlf+Wh/hhmdCq0qDy+xpgCTMfFUiWDAjdwP+SPdGKx0oh5FFj6ntsBGPQEwhaBPu6wnxvcul/Qt9jBvYrSV6LU2YHdQVxvgUbEvAfO11/2+wsgyZklLmUONV2CC+xz9T26IwROf51YdBntXdBrHMSb7eHSuJHW2l2z9Ma3p2s2drql0mEL/cb+BSqpQMnAwzayzRCLVshZ4UKVdEAtkdR3tKhQgBR9Nv60am85MQP6uo5+S9A4bvlMxh+31R2VLIOv1yhpc9fohOlc/tMH+hw/EoRTgFoRK88gXHIrpb6+kRUPZj1EFuAofelq+2rdpq8jDXE5w35uk1pO1tKV7mHOTwSW5935ghxG3mkphoIOjwqPVcmlv/PikjNFUHqD1mkYP3k=
+  - secure: EoMTp7kF81ri4tusTBs/dtRdLQP5hRSZWwaPfzXm+XSshPYKj9ikHyMyPhB8ZMhlq2C8Gkhd+lCdd+pLDoJWbc7FhnMLU73nJDbZhzgAkwl8op2lZwTnIg9uPx36UURN/NfWYgG1uYA1PcgxDIbv3m4EweLHcUYdEbf9HrZgUT7O/TmauBdnkALznllbtkyk792bK89OAjRbJuNcLaXN1PHXirSisg2m1rPLqTt2eEvONyT6he9C3tYvZXkSr6Z0ZvV/PTqmSVkYZ3zK9rBNoix5Mo9Yzppa8YW01Gb0mKBgvMetgTQpGViKVI3Rku9NYy3XWXiM6XDrcT2TlZp/dHbqHZ9BAqhkkBtqyjcG11H0v6G8BOwg7ECdgLwWSnBqPrzsL9mqWan8xinIIMSMzX9gn7plUpU4Z0w5aa6F0IxCsJaw8B/h1nQ0wxf4/bWcNLnl0zkRtNj4A126wPtCR/qPBoeo3PKgslfYaic/0FxR6BL/NyRTOcFy4RcFjV2QNTaekL30ja8lx3ogiqzV1LzKvUAGEqFR92J0dzftO4RH7/XIDwzGHr7a6OuA/qkD20LFMjPHowu8HAJg2ULawO/QxBHoIfMHmFXbStdULp5eMxjdlQEFnm1Zl3chGPhYtYWQgpKqFTuuy9E2icNVoPXUSKIaEPuQNpXuW2nwdro=
