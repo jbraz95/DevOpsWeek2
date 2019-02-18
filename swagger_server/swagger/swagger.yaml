@@ -4,10 +4,10 @@ info:
   description: "A simple API to learn how to write OpenAPI Specification"
   version: "1.0.0"
   title: "Simple API"
-host: "simple.api"
-basePath: "/openapi101"
+host: "localhost:8080"
+basePath: "/"
 schemes:
-- "https"
+- "http"
 paths:
   /persons:
     get:

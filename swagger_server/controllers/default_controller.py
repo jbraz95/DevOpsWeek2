@@ -5,7 +5,9 @@ from swagger_server.models.error import Error  # noqa: E501
 from swagger_server.models.person import Person  # noqa: E501
 from swagger_server.models.persons import Persons  # noqa: E501
 from swagger_server import util
+from flask import jsonify, Response
 
+persons_list = []
 
 def persons_get(pageSize=None, pageNumber=None):  # noqa: E501
     """Gets some persons
@@ -19,7 +21,14 @@ def persons_get(pageSize=None, pageNumber=None):  # noqa: E501
 
     :rtype: Persons
     """
-    return 'do some magic!'
+    if (pageSize is None or pageNumber is None):
+        persons = Persons(persons_list)
+        list = persons.items
+        return jsonify(list)
+    else:
+        persons = Persons(persons_list[(pageSize*pageNumber):(pageSize*(pageNumber+1))])
+        list = persons
+        return jsonify(list)
 
 
 def persons_post(person=None):  # noqa: E501
@@ -34,7 +43,10 @@ def persons_post(person=None):  # noqa: E501
     """
     if connexion.request.is_json:
         person = Person.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+        persons_list.append(person)
+        return Response(mimetype='application/json', status=204)
+    else:
+        return Response(mimetype='application/json', status=400)
 
 
 def persons_username_delete(username):  # noqa: E501
@@ -47,7 +59,12 @@ def persons_username_delete(username):  # noqa: E501
 
     :rtype: None
     """
-    return 'do some magic!'
+    for person in persons_list:
+        if person.username == username:
+            persons_list.remove(person)
+            break;
+
+    return Response(mimetype='application/json', status=204)
 
 
 def persons_username_friends_get(username, pageSize=None, pageNumber=None):  # noqa: E501
@@ -77,4 +94,9 @@ def persons_username_get(username):  # noqa: E501
 
     :rtype: Person
     """
-    return 'do some magic!'
+    for person in persons_list:
+        if person.username == username:
+            personCopy = person
+            break;
+
+    return jsonify(person)

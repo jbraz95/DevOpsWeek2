@@ -1,188 +1,727 @@
+---
 swagger: "2.0"
-
 info:
-  version: 1.0.0
-  title: Simple API
-  description: A simple API to learn how to write OpenAPI Specification
-
+  description: "A simple API to learn how to write OpenAPI Specification"
+  version: "1.0.0"
+  title: "Simple API"
+host: "localhost:8080"
+basePath: "/"
 schemes:
-  - https
-host: simple.api
-basePath: /openapi101
-
+- "https"
 paths:
   /persons:
     get:
-      summary: Gets some persons
-      description: Returns a list containing all persons. The list supports paging.
+      summary: "Gets some persons"
+      description: "Returns a list containing all persons. The list supports paging."
+      operationId: "persons_get"
       parameters:
-       - $ref: "#/parameters/pageSize"
-       - $ref: "#/parameters/pageNumber"
+      - name: "pageSize"
+        in: "query"
+        description: "Number of persons returned"
+        required: false
+        type: "integer"
+        maximum: 100
+        exclusiveMaximum: false
+        minimum: 0
+        exclusiveMinimum: true
+        multipleOf: 10
+        format: "int32"
+      - name: "pageNumber"
+        in: "query"
+        description: "Page number"
+        required: false
+        type: "integer"
       responses:
         200:
-          description: A list of Person
+          description: "A list of Person"
           schema:
             $ref: "#/definitions/Persons"
         500:
-          $ref: "#/responses/Standard500ErrorResponse"
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
     post:
-      summary: Creates a person
-      description: Adds a new person to the persons list.
+      summary: "Creates a person"
+      description: "Adds a new person to the persons list."
+      operationId: "persons_post"
       parameters:
-        - name: person
-          in: body
-          description: The person to create.
-          schema:
-            $ref: "#/definitions/Person"
+      - in: "body"
+        name: "person"
+        description: "The person to create."
+        required: false
+        schema:
+          $ref: "#/definitions/Person"
       responses:
         204:
-          description: Person succesfully created.
+          description: "Person succesfully created."
         400:
-          description: Person couldn't have been created.
+          description: "Person couldn't have been created."
         500:
-          $ref: "#/responses/Standard500ErrorResponse"
-          
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
   /persons/{username}:
-    parameters:
-      - $ref: "#/parameters/username"
     get:
-      summary: Gets a person
-      description: Returns a single person for its username.
+      summary: "Gets a person"
+      description: "Returns a single person for its username."
+      operationId: "persons_username_get"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "The person's username"
+        required: true
+        type: "string"
       responses:
         200:
-          description: A Person
+          description: "A Person"
           schema:
             $ref: "#/definitions/Person"
         404:
-          $ref: "#/responses/PersonDoesNotExistResponse"
+          description: "Person does not exist."
         500:
-          $ref: "#/responses/Standard500ErrorResponse"
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
     delete:
-      summary: Deletes a person
-      description: Delete a single person identified via its username
+      summary: "Deletes a person"
+      description: "Delete a single person identified via its username"
+      operationId: "persons_username_delete"
+      parameters:
+      - name: "username"
+        in: "path"
+        description: "The person's username"
+        required: true
+        type: "string"
       responses:
         204:
-          description: Person successfully deleted.
+          description: "Person successfully deleted."
         404:
-          $ref: "#/responses/PersonDoesNotExistResponse"
+          description: "Person does not exist."
         500:
-          $ref: "#/responses/Standard500ErrorResponse"
-          
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
   /persons/{username}/friends:
-    parameters:
-      - $ref: "#/parameters/username"
     get:
-      summary: Gets a person's friends
-      description: Returns a list containing all persons. The list supports paging.
+      summary: "Gets a person's friends"
+      description: "Returns a list containing all persons. The list supports paging."
+      operationId: "persons_username_friends_get"
       parameters:
-       - $ref: "#/parameters/pageSize"
-       - $ref: "#/parameters/pageNumber"
+      - name: "username"
+        in: "path"
+        description: "The person's username"
+        required: true
+        type: "string"
+      - name: "pageSize"
+        in: "query"
+        description: "Number of persons returned"
+        required: false
+        type: "integer"
+        maximum: 100
+        exclusiveMaximum: false
+        minimum: 0
+        exclusiveMinimum: true
+        multipleOf: 10
+        format: "int32"
+      - name: "pageNumber"
+        in: "query"
+        description: "Page number"
+        required: false
+        type: "integer"
       responses:
         200:
-          description: A person's friends list 
+          description: "A person's friends list"
           schema:
             $ref: "#/definitions/Persons"
         404:
-          $ref: "#/responses/PersonDoesNotExistResponse"
+          description: "Person does not exist."
         500:
-          $ref: "#/responses/Standard500ErrorResponse"
-
+          description: "An unexpected error occured."
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "swagger_server.controllers.default_controller"
 definitions:
   Person:
     required:
-      - username
+    - "username"
     properties:
       firstName:
-        type: string
+        type: "string"
       lastName:
-        type: string
+        type: "string"
       username:
-        type: string
-        pattern: "[a-z0-9]{8,64}"
+        type: "string"
         minLength: 8
         maxLength: 64
+        pattern: "[a-z0-9]{8,64}"
+        x-regex: "[a-z0-9]{8,64}"
+        x-modifiers: []
       dateOfBirth:
-        type: string
-        format: date
+        type: "string"
+        format: "date"
       lastTimeOnline:
-        type: string
-        format: date-time
+        type: "string"
+        format: "date-time"
         readOnly: true
+    example:
+      firstName: "firstName"
+      lastName: "lastName"
+      lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+      dateOfBirth: "2000-01-23"
+      username: "username"
   Persons:
     properties:
       items:
-        type: array
-        minItems: 10
-        maxItems: 100
+        type: "array"
         uniqueItems: true
         items:
           $ref: "#/definitions/Person"
+        maxItems: 100
+        minItems: 10
+    example:
+      items:
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
+      - firstName: "firstName"
+        lastName: "lastName"
+        lastTimeOnline: "2000-01-23T04:56:07.000+00:00"
+        dateOfBirth: "2000-01-23"
+        username: "username"
   Error:
     required:
-      - code
-      - message
+    - "code"
+    - "message"
     properties:
       code:
-        type: string
+        type: "string"
       message:
-        type: string
-
+        type: "string"
+parameters:
+  username:
+    name: "username"
+    in: "path"
+    description: "The person's username"
+    required: true
+    type: "string"
+  pageSize:
+    name: "pageSize"
+    in: "query"
+    description: "Number of persons returned"
+    required: false
+    type: "integer"
+    maximum: 100
+    exclusiveMaximum: false
+    minimum: 0
+    exclusiveMinimum: true
+    multipleOf: 10
+    format: "int32"
+  pageNumber:
+    name: "pageNumber"
+    in: "query"
+    description: "Page number"
+    required: false
+    type: "integer"
 responses:
   Standard500ErrorResponse:
-    description: An unexpected error occured.
+    description: "An unexpected error occured."
     schema:
       $ref: "#/definitions/Error"
   PersonDoesNotExistResponse:
-    description: Person does not exist.
-
-parameters:
-  username:
-    name: username
-    in: path
-    required: true
-    description: The person's username
-    type: string
-  pageSize:
-    name: pageSize
-    in: query
-    description: Number of persons returned
-    type: integer
-    format: int32
-    minimum: 0
-    exclusiveMinimum: true
-    maximum: 100
-    exclusiveMaximum: false
-    multipleOf: 10
-  pageNumber:
-    name: pageNumber
-    in: query
-    description: Page number
-    type: integer
-    
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+    description: "Person does not exist."
