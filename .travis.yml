@@ -27,8 +27,8 @@ script:
 - node_modules/.bin/newman run tests/postman_collection.json -e tests/postman_environment.json
 after_success:
 - docker login -u $DOCKER_USER -p $DOCKER_PASS
-- docker tag devops-week2/swagger_server devops-week2/swagger_server
-- docker push devops-week2/swagger_server
+- docker tag bermejooz/devops-week2:1.0.0 bermejooz/devops-week2:1.0.0
+- docker push bermejooz/devops-week2:1.0.0
 env:
   global:
   - secure: TrnSPKNY1roE7wEWlDnock3cj9GizQZQK+67fIC3B60U5LQOhm/Uoi+Ss+lXV7RSBMwutwo50vHfxQ3u0ycfIOHIsgUBLz0MjUUrdfKM+LwkTCP8PrB6Du4rnhqriFtYL1LunaUpC+F3JwmwdMcYY4OcK5g4oO9iX1RfXWIjanhE40+PpxNnodBRUwzKB1BSXI0Rz8vx86zPHxGuCDpzHsw9MI1kmmvBZw7hqFzYWRHrq+4DqgRVfrxHOGH4wBBM+cij73xE3+wvvBgKTtsMbrzi2wR5dsUQQJCN5Crlf+Wh/hhmdCq0qDy+xpgCTMfFUiWDAjdwP+SPdGKx0oh5FFj6ntsBGPQEwhaBPu6wnxvcul/Qt9jBvYrSV6LU2YHdQVxvgUbEvAfO11/2+wsgyZklLmUONV2CC+xz9T26IwROf51YdBntXdBrHMSb7eHSuJHW2l2z9Ma3p2s2drql0mEL/cb+BSqpQMnAwzayzRCLVshZ4UKVdEAtkdR3tKhQgBR9Nv60am85MQP6uo5+S9A4bvlMxh+31R2VLIOv1yhpc9fohOlc/tMH+hw/EoRTgFoRK88gXHIrpb6+kRUPZj1EFuAofelq+2rdpq8jDXE5w35uk1pO1tKV7mHOTwSW5935ghxG3mkphoIOjwqPVcmlv/PikjNFUHqD1mkYP3k=
