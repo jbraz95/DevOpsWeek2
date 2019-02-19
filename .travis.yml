@@ -19,14 +19,14 @@ before_script:
 script:
 - nosetests
 - docker build -t bermejooz/devops-week2 .
-- docker run --name example_api -d -t -p 127.0.0.1:8080:8080 bermejooz/devops-week2
+- docker run --name example_api -d -t -p 127.0.0.1:8080 bermejooz/devops-week2
 - docker ps
 - count=0 && until $(curl --output /dev/null --silent --head --fail http://localhost:8080);
   do printf '.' && sleep 3 && count=$((count+1)) && if [ $count -gt 5 ]; then break;
   fi; done
 - node_modules/.bin/newman run tests/postman_collection.json -e tests/postman_environment.json
 after_success:
-- docker login -u $DOCKER_USER -p $DOCKER_PASS
+- echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
 - docker tag bermejooz/devops-week2:1.0.0 bermejooz/devops-week2:1.0.0
 - docker push bermejooz/devops-week2:1.0.0
 env:
