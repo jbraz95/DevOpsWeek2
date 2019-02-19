@@ -155,7 +155,7 @@
                                     "});",
                                     "",
                                     "var jsonData = JSON.parse(responseBody); //get the response and pase it into json",
-                                    "tests[\"Number of array items: \"+jsonData.items.length+ \" should be eqaual to pageSize:\"+5] = jsonData.items.length == 5; // test if the returned array size is equal to the numOfposts (5)",
+                                    "tests[\"Number of array items: \"+jsonData.items.length+ \" should be eqaual to pageSize:\"+5] = jsonData.items.length == 5; // test if the returned array size is equal to (5)",
                                     ""
                                 ],
                                 "type": "text/javascript"
