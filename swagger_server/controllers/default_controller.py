@@ -26,7 +26,7 @@ def persons_get(pageSize=None, pageNumber=None):  # noqa: E501
         list = persons.items
         return jsonify(list)
     else:
-        persons = Persons(persons_list[(pageSize*pageNumber):(pageSize*(pageNumber+1))])
+        persons = Persons(persons_list[(pageSize*(pageNumber-1)):(pageSize*pageNumber)])
         list = persons
         return jsonify(list)
 
