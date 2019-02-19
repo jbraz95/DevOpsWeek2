@@ -25,7 +25,7 @@
                                     "//Test if created ",
                                     "tests[\"Status code is 204\"] = (responseCode.code === 204);",
                                     "//Get the POST count ",
-                                    "var count = _.parseInt(environment.count);",
+                                    "var count = 0",
                                     "if (responseCode.code === 204) {",
                                     "    var numOfposts = _.parseInt(environment.numOfposts);",
                                     "    //If count is less than 5 set next to this",
