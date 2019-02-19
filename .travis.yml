@@ -27,8 +27,7 @@ script:
 - node_modules/.bin/newman run tests/postman_collection.json -e tests/postman_environment.json
 after_success:
 - docker login -u $DOCKER_USER -p $DOCKER_PASS
-- docker tag bermejooz/devops-week2:1.0.0 bermejooz/devops-week2:1.0.0
-- docker push bermejooz/devops-week2:1.0.0
+- docker push bermejooz/devops-week2
 env:
   global:
   - secure: vgyr6BeXzqP+0DzVkBvAz013poD/JQxVad/Oi3rJO4Vtp9cRxWhqFwCeHF4tx50F0p4vvPr6Fbs2thGntfDqIgOAx8W9t2WZJ28nD4e88P1GGqpoLTMIkf3zmd4jQGy8ldtzfECQDN5qfw3xhwA8zPO0AUVIDii8JVcs/j1onhVbUwCmXuWLZi9Mwi37tdujKQ2rr40eEEPymi71sFN8DONRw+ks1j5l5kDwpGMupzOYbe9VG6Ecju1taXLNkcJW7vWxJd9BCbSUlYaQ+yE4xCWa+cZHbvWJkJIUGOCNSRmwscCi3VFxGs/Le02eIOp/dp5jTVaBjpMB3KF9gPetS302S2h/RReLS/44nYv5R/ey3NSTOUvczUQqUHHsbVANJCH4WI5oxiALK+wK2xY3KrYnBpcA4R9hSNKkN9854jGie6VfIkCL9OwX1reIjS84eum7LSZofzhcxm9w2L0+L4QI8kqw8AMxbL7kGTzTQK+MXiCtyCad2+kUTTxyERCE4An7Hj1dT+87wpMK1ZmOdHc+obUbmjlaUqyQO+spldFgSKyuhD+bti7wAG8myBPQ8cAgghOC0Lf+vfM7WuJf4/lQuxBBn12E4NLjb9Sn5ThMofbx27USTImQi3SGGFCAxZBwIqmD60hqjx2Iee/8lGwnmy3OeRiOcJcD71fLYog=
