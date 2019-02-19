@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: swagger-spring-example
+  labels:
+    app: swagger-spring-example
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: swagger-spring-example
+    spec:
+      containers:
+        - name: swagger-spring-example
+          image: bermejooz/devops-week2:latest
+          ports:
+            - containerPort: 8080
+      restartPolicy: Always
+status: {}
